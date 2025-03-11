@@ -1,6 +1,10 @@
 .idea/datavis_g5.iml
+<<<<<<< HEAD
 main.py
 .idea/vcs.xml
 .idea/modules.xml
 .idea/misc.xml
 .idea/inspectionProfiles/profiles_settings.xml
+=======
+*.xml
+>>>>>>> 060f8ccebf4128cad3ac7d8650779cc00949e9a8
