@@ -1,0 +1,14 @@
+notebook
+numpy~=2.2.3
+pandas~=2.2.3
+openpyxl
+matplotlib
+seaborn~=0.13.2
+dash
+imageio
+fpdf
+lorem
+streamlit
+plotly~=6.0.0
+scipy~=1.15.2
+statsmodels~=0.14.4
