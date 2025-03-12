@@ -3,8 +3,8 @@ import pandas as pd
 import streamlit as st
 
 # Datei laden und bereinigen
-file_path = "googleplaystore.csv"
-output_file = "googleplaystore_export.csv"
+file_path = "../googleplaystore.csv"
+output_file = "../googleplaystore_export.csv"
 
 
 def load_and_clean_data():

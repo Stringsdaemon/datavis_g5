@@ -4,12 +4,12 @@ import sys
 import os
 
 # Stelle sicher, dass der Modulpfad korrekt hinzugefügt wird
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "Projektarbeiten", "Streamlit", "datavis_g5")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "Projektarbeiten", "Streamlit", "datavis_g5", "test_2")))
 
-from analysis_1 import top_10_apps                                                                            # Import ohne Pfad-Probleme
+from analysis_2 import top_10_apps                                                                            # Import ohne Pfad-Probleme
 
 # Datei laden und bereinigen
-file_path = "googleplaystore_export.csv"
+file_path = "google_clean_v2.csv"
 
 def load_data():
     return pd.read_csv(file_path)
