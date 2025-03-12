@@ -23,4 +23,4 @@ option = st.selectbox("Wähle eine Analyse", ["Top 10 Apps Anzahl der Bewertunge
 if option == "Top 10 Apps Anzahl der Bewertungen":
     top_10_apps(df)
 
-st.success("Analyse erfolgreich durchgeführt.")
+#st.success("Analyse erfolgreich durchgeführt.")
