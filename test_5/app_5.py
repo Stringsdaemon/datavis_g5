@@ -5,7 +5,7 @@ import os
 
 # Stelle sicher, dass der Modulpfad korrekt hinzugefügt wird
 sys.path.append(os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "Projektarbeiten", "Streamlit", "datavis_g5", "test_5")))
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "Projektarbeiten", "Streamlit", "datavis_g5", "test_5streamlite run ao")))
 
 from analysis_5 import get_top_10_apps
 from visualization_5 import animate_chart
