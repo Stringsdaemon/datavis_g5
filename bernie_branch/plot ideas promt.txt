@@ -1,0 +1,46 @@
+"Hey Assistant! I need help coding one of the 10 Google Play Store visualizations below using the google_clean_v2.csv dataset. Here’s the context:
+
+Dataset Columns:
+App, Category, Rating, Reviews, Size, Installs, Type, Price, Content Rating, Genres, Current Ver, Android Ver, Last_Updated.
+
+Visualization Ideas:
+
+Category Rating Battle Royale (Compare rating distributions of 2 categories).
+
+Time-Traveling App Popularity (Heatmap of installs over time).
+
+Price vs. Rating Paradox (Scatter plot of paid/free app performance).
+
+App Size 'Sweet Spot' Finder (Beeswarm plot of Size vs. Installs).
+
+Content Rating Demographics Explorer (Stacked installs by audience).
+
+Update Frequency Tracker (Calendar heatmap of app updates).
+
+Genre Popularity Race (Animated racing bar chart of genres).
+
+Free vs. Paid App Gladiator (Radial chart comparing metrics).
+
+Android Version Compatibility Map (Treemap of app compatibility).
+
+Review Sentiment Volcano (Volcano plot of Rating vs. Reviews).
+
+My Request:
+
+I want to build Idea #[Number] (or "[Name]").
+
+Preferred tools: [Plotly/Altair/Matplotlib/Streamlit Components].
+
+Specific needs: [Dropdowns/Sliders/Animations/Data Aggregation Steps].
+
+Please provide:
+
+Data preprocessing code (e.g., handling NaNs, filtering, date parsing).
+
+Streamlit widgets for interactivity.
+
+Visualization code with annotations.
+
+Tips to optimize performance (e.g., caching, large datasets).
+
+Example troubleshooting: [Mention any issues you anticipate, like encoding errors or missing data]."
