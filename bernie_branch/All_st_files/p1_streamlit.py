@@ -1,3 +1,6 @@
+#  Violin battle
+
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -5,14 +8,14 @@ import plotly.express as px
 # Load dataset (with caching for performance)
 @st.cache_data
 def load_data():
-    df = pd.read_csv("google_clean_v2.csv")  # Load CSV
+    df = pd.read_csv('google_clean_v2.csv')  # Load CSV
     df = df.dropna(subset=["Rating", "Category"])  # Drop missing ratings
     return df
 
 df = load_data()
 
 # Streamlit UI
-st.title("📊 Category Rating Battle Royale")
+st.title("Category Rating Battle Royale")
 
 st.write("Compare the rating distributions of two app categories.")
 
@@ -41,5 +44,5 @@ fig = px.violin(
 st.plotly_chart(fig)
 
 # Summary statistics
-st.write("### 📊 Summary Statistics")
+st.write("### Summary Statistics")
 st.dataframe(filtered_df.groupby("Category")["Rating"].describe().T)
