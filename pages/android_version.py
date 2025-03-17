@@ -5,7 +5,7 @@ import time
 
 
 # Load your data
-data = pd.read_csv('google_clean_v2.csv')
+data = pd.read_csv('google_clean_v3.csv')
 
 # Group by Android Version and calculate average installs
 android_version_installs = data.groupby('Android Ver')['Installs'].mean().reset_index()

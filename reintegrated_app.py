@@ -9,7 +9,7 @@ st.set_page_config(page_title="Gruppe 5 Datenvisualisierung", layout="wide")
 # Load Data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("google_clean_v2.csv")  # Use the cleaned dataset
+    df = pd.read_csv("google_clean_v3.csv")  # Use the cleaned dataset
     df["Last_Updated"] = pd.to_datetime(df["Last_Updated"], errors="coerce", format="%Y-%m-%d")  # Fix date parsing
     return df
 

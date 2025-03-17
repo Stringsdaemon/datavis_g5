@@ -3,46 +3,53 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import time
-from datetime import datetime
+import numpy as np
+import os
 
-# Daten laden und bereinigen
+
+# Daten laden mit Fehlerhandling
 def load_data():
-    file_path = "google_clean_v2.csv"
-    return pd.read_csv(file_path)
+    file_path = "google_clean_v3.csv"
+    if not os.path.exists(file_path):
+        st.error("⚠️ Die Datei google_clean_v2.csv wurde nicht gefunden.")
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(file_path)
+    except Exception as e:
+        st.error(f"⚠️ Fehler beim Laden der Datei: {e}")
+        return pd.DataFrame()
 
+
+# Funktion zur Auswahl der Top 10 Apps
 def get_top_10_apps(df, category):
-    """Filtert die Top 10 Apps nach Bewertungen basierend auf der ausgewählten Kategorie."""
     df = df.copy()
     df["Reviews"] = pd.to_numeric(df["Reviews"], errors="coerce").fillna(0).astype(int)
 
-    # Filter nach Kategorie
     if category != "Alle Kategorien":
         df = df[df["Category"] == category]
 
-    # Entferne doppelte Apps und nehme nur die höchsten Bewertungen pro App
     top_apps = df.sort_values(by="Reviews", ascending=False).drop_duplicates(subset=["App"]).head(10)
-    top_apps = top_apps.sort_values(by="Reviews", ascending=True)  # Sortiere für Animation
+    top_apps = top_apps.sort_values(by="Reviews", ascending=True)
 
     return top_apps
 
-def animate_chart(top_apps):
-    """Erstellt eine animierte Visualisierung der Top 10 Apps
-    nach Anzahl der Bewertungen mit mehreren Diagrammtypen."""
-    chart = st.empty()
 
+# Hauptanimationsfunktion
+def animate_chart(top_apps):
+    chart = st.empty()
     chart_type = st.radio("Diagrammtyp auswählen",
                           ["Balkendiagramm", "Kreisdiagramm", "Liniendiagramm", "3D Bubble Chart"], index=0)
+    speed = st.slider("🎛 Animationsgeschwindigkeit", 0.01, 1.0, 1.0, 0.01)
 
-    speed = st.slider("🎛 Animationsgeschwindigkeit", 0.01, 1.0, 0.1, 0.01)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         start_animation = st.button("▶️ Play", key="start_button", help="Starte die Animation")
 
     if start_animation:
-        y_max = max(1000000, top_apps["Reviews"].max() * 1.2)  # Dynamische Skalierung
+        y_max = max(1000000, top_apps["Reviews"].max() * 1.2)
 
         if chart_type == "3D Bubble Chart":
-            for i in range(1, 101):  # Animationsschritte
+            for i in range(1, 101):
                 animated_factor = i / 100
                 top_apps["Animated_Reviews"] = (top_apps["Reviews"] * animated_factor).astype(int)
                 top_apps["Size"] = (top_apps["Animated_Reviews"] / top_apps["Reviews"].max()) * 50
@@ -56,7 +63,9 @@ def animate_chart(top_apps):
                 )
                 fig.update_traces(marker=dict(sizemode='area', sizemin=5))
                 fig.update_layout(
-                    scene_camera=dict(eye=dict(x=1.5 - animated_factor, y=1.5 - animated_factor, z=0.5 + animated_factor)),
+                    dragmode='pan',
+                    scene_camera=dict(
+                        eye=dict(x=1.5 - animated_factor, y=1.5 - animated_factor, z=0.5 + animated_factor)),
                     scene=dict(
                         xaxis=dict(range=[-1, len(top_apps) + 1]),
                         yaxis=dict(range=[0, y_max]),
@@ -64,7 +73,7 @@ def animate_chart(top_apps):
                     )
                 )
                 chart.plotly_chart(fig, use_container_width=True, key=f"chart_3d_{i}")
-                time.sleep(speed / 3)
+                time.sleep(1 / (speed * 30))
             return
 
         if chart_type == "Liniendiagramm":
@@ -82,6 +91,7 @@ def animate_chart(top_apps):
                     marker=dict(size=8, color='royalblue')
                 ))
                 fig.update_layout(
+                    dragmode='pan',
                     title="📊 Entwicklung der Bewertungen (Liniendiagramm)",
                     xaxis_title="App",
                     yaxis_title="Anzahl der Bewertungen",
@@ -89,7 +99,7 @@ def animate_chart(top_apps):
                     height=800, width=1000
                 )
                 chart.plotly_chart(fig, use_container_width=True, key=f"chart_line_{j}")
-                time.sleep(speed * 4)
+                time.sleep(1 / (speed * 30))
             return
 
         for i in range(1, 101):
@@ -106,7 +116,8 @@ def animate_chart(top_apps):
                 )
                 fig.update_traces(textposition="outside", marker=dict(line=dict(width=1, color='black')))
                 fig.update_yaxes(range=[0, y_max], gridcolor='lightgray')
-                fig.update_layout(height=600, width=800)
+                fig.update_layout(
+                    dragmode='pan', height=600, width=800)
 
             elif chart_type == "Kreisdiagramm":
                 fig = go.Figure()
@@ -119,27 +130,24 @@ def animate_chart(top_apps):
                         hole=0.3
                     )
                     chart.plotly_chart(fig, use_container_width=True, key=f"chart_pie_{i}_{j}")
-                    time.sleep(speed * 5)
+                    time.sleep(1 / (speed * 30))
                 break
 
             chart.plotly_chart(fig, use_container_width=True, key=f"chart_{i}")
-            time.sleep(speed / 5)
+            time.sleep(1 / (speed * 30))
+
 
 # Streamlit UI
 df = load_data()
 st.markdown("#### 📊 Google Play Store Analyse", unsafe_allow_html=True)
 st.markdown("###### Entdecke deine App")
 
-# Kategorien-Auswahl
 categories = ["Alle Kategorien"] + sorted(df["Category"].dropna().unique().tolist())
 selected_category = st.selectbox("📂 Wähle eine Kategorie", categories, key="category_select")
 
-# Auswahl für Analyse
 option = st.selectbox("📈 Wähle eine Analyse", ["Top 10 Apps nach Anzahl der Bewertungen"])
 
 if option == "Top 10 Apps nach Anzahl der Bewertungen":
-
-    # Lade die Top 10 Apps für die gewählte Kategorie
     top_apps = get_top_10_apps(df, selected_category)
 
     if not top_apps.empty:
