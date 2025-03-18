@@ -6,6 +6,12 @@ import time
 import numpy as np
 import os
 
+st.set_page_config(page_title="Top apps study", layout="wide")
+
+#  "logo"
+
+st.sidebar.image("assets/logo_asmodeus.jpg", use_container_width=True)
+
 
 # Daten laden mit Fehlerhandling
 def load_data():

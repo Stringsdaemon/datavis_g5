@@ -3,6 +3,12 @@ import streamlit as st
 import plotly.express as px
 import time
 
+st.set_page_config(page_title="Android Versions study", layout="wide")
+
+#  "logo"
+
+st.sidebar.image("assets/logo_asmodeus.jpg", use_container_width=True)
+
 
 # Load your data
 data = pd.read_csv('google_clean_v3.csv')

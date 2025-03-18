@@ -6,6 +6,12 @@ import plotly.express as px
 # Streamlit config
 st.set_page_config(layout="wide", page_title="Preis vs. Bewertung Paradoxon")
 
+
+#  "logo"
+
+st.sidebar.image("assets/logo_asmodeus.jpg", use_container_width=True)
+
+
 # Load, cache, data prep
 @st.cache_data
 def load_data():
@@ -43,6 +49,13 @@ plot_data = load_data()
 
 # Title
 st.title("Preis vs. Bewertung Paradoxon")
+st.subheader("""
+         Paradoxon ([ˈpaʁadoˌksɔn]):
+         Definition: Eine Aussage oder Situation, die scheinbar widersprüchlich oder unlogisch erscheint, 
+         aber möglicherweise eine tiefere Wahrheit enthält.
+         """
+          )
+st.divider()
 st.write(
     "Untersuchen Sie, wie Bewertungen, Rezensionen und Installationen zwischen kostenlosen und kostenpflichtigen Apps variieren.")
 
@@ -118,12 +131,45 @@ with col_main:
 
     st.plotly_chart(fig_scatter, use_container_width=True)
 
+
+# Bar Chart: Log-Scaled Review Count per Category (Paid vs Free)
+st.subheader("Log-Skalierte Rezensionen pro Kategorie (Gratis vs. Bezahlte Apps)")
+
+# Aggregate review counts per category and type
+review_counts = plot_data.groupby(["Category", "Type"])["Reviews"].sum().reset_index()
+
+# Apply log transformation (log10)
+review_counts["Log Reviews"] = np.log10(review_counts["Reviews"] + 1)  # Avoid log(0)
+
+# Create the bar chart
+fig_reviews = px.bar(
+    review_counts,
+    x="Category",
+    y="Log Reviews",
+    color="Type",
+    title="Log-Skalierte Rezensionen pro Kategorie (Gratis vs. Bezahlte Apps)",
+    labels={"Log Reviews": "Log₁₀(Gesamtanzahl der Rezensionen)", "Category": "Kategorie"},
+    color_discrete_map={"Free": "#5ec962", "Paid": "#440154"},
+    barmode="group"  # Groups Paid and Free side by side
+)
+
+# Improve layout for readability
+fig_reviews.update_layout(
+    xaxis_title="Kategorie",
+    yaxis_title="Log₁₀(Gesamtanzahl der Rezensionen)",
+    xaxis_tickangle=-45  # Rotate x-axis labels
+)
+
+# Display the chart
+st.plotly_chart(fig_reviews, use_container_width=True)
+
 # DataFrame: Show filtered data
 with col_data:
     st.subheader("Daten anzeigen")
-    st.dataframe(plot_data[["App", "Category", "Rating", "Reviews", "Installs", "Price", "Type"]].head(10))
+    plot_data_sorted = plot_data.sort_values(by=dot_size_metric, ascending=False)
+    st.dataframe(plot_data_sorted[["App", "Category", "Rating", "Reviews", "Installs", "Price", "Type"]].head(10))
 
-# Bar Chart: Number of Apps per Price Category
+#   Bar Chart: Number of Apps per Price Category
 with col_bar:
     st.subheader("Bar Chart: Anzahl der Apps nach Preis-Kategorie")
 
@@ -145,7 +191,7 @@ with col_pie:
 
     # Rating categories
     def categorize_rating(rating):
-        """Categorize rating in 5 groups"""
+        "Categorize rating in 5 groups"
         if rating < 2:
             return "Sehr Niedrig (1.0 - 1.9)"
         elif rating < 3:
@@ -174,6 +220,22 @@ with col_pie:
 
     st.plotly_chart(fig_pie, use_container_width=True)
 
+#   Pivot Table: Reviews per Category (Paid vs Free)
+st.subheader("Tabelle der Rezensionen pro Kategorie (Gratis vs. Bezahlte Apps)")
+
+#  aggregate reviews by cat and type
+review_table = plot_data.groupby(["Category", "Type"])["Reviews"].sum().unstack(fill_value=0)
+
+#  add total column (Paid Free sum)
+review_table["Total"] = review_table.sum(axis=1)
+
+# Convert to integer format for display
+review_table = review_table.astype(int).sort_values(by="Total", ascending=False)
+
+# Display as Streamlit table
+st.dataframe(review_table.style.format(thousands=","))  # Formats numbers with commas for readability
+
+
 # 3D Scatter-Plot
 st.subheader("3D Scatter-Plot: Rezensionen, Installationen & Bewertungen")
 
@@ -193,3 +255,5 @@ fig_3d = px.scatter_3d(
 fig_3d.update_layout(height=1200)
 
 st.plotly_chart(fig_3d, use_container_width=True)
+
+
