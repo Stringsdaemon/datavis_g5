@@ -3,6 +3,10 @@ import streamlit as st
 # Set Page Config
 st.set_page_config(page_title="Michael's Honorary Page", layout="wide")
 
+#  "logo"
+
+st.sidebar.image("assets/logo_asmodeus.jpg", use_container_width=True)
+
 # Custom Background
 st.markdown(
     """
@@ -15,12 +19,45 @@ st.markdown(
     /* Video styling - positioning it at the bottom-right corner */
     .video-frame {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 25%;  /* Reduce size by 20% */
-        height: 30%; /* Adjust height to maintain aspect ratio */;
-
+        bottom: 20%;
+        right: 25%;
+        width: 40%;
+        height: 45%; /* Adjust height to maintain aspect ratio */
     }
+
+    /* GIFs styling - positioning them around the page */
+     .gif2, .gif3, .gif4, .gif5 {
+        position: fixed;
+        width: 20%; /* Adjust width as needed */
+        height: auto;
+        z-index: 10; /* Ensures GIFs appear above other content */
+    }
+
+    /* Specific positioning for each GIF */
+   
+
+    .gif5 {
+        top: 25%;
+        right: 5%;
+        
+    }
+
+    .gif3 {
+        bottom: 3%;
+        left: 20%;
+        width: 13%;
+        height: auto
+    }
+
+    .gif4 {
+        bottom: 5%;
+        right: 5%;
+        width: 13%;
+        height: auto;
+        
+    }
+
+    
     </style>
     """,
     unsafe_allow_html=True
@@ -38,6 +75,17 @@ st.markdown(
     <iframe class="video-frame" src="https://www.youtube.com/embed/gc5t68ogB84" 
     frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    """,
+    unsafe_allow_html=True
+)
+
+# GIFs with direct links to GIF sources
+st.markdown(
+    """
+    
+    <img src="https://media.giphy.com/media/ArAgo5dU2z2xO/giphy.gif" class="gif3">
+    <img src="https://media.giphy.com/media/gX2NAgKI2HeoM/giphy.gif" class="gif4">
+    <img src="https://media.giphy.com/media/O0oQygeklvnX2/giphy.gif" class="gif5">
     """,
     unsafe_allow_html=True
 )
