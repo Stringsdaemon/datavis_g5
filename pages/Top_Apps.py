@@ -17,7 +17,7 @@ st.sidebar.image("assets/logo_asmodeus.jpg", use_container_width=True)
 def load_data():
     file_path = "google_clean_v3.csv"
     if not os.path.exists(file_path):
-        st.error("⚠️ Die Datei google_clean_v2.csv wurde nicht gefunden.")
+        st.error("⚠️ Die Datei google_clean_v3.csv wurde nicht gefunden.")
         return pd.DataFrame()
     try:
         return pd.read_csv(file_path)
