@@ -3,9 +3,36 @@ import pandas as pd
 import plotly.express as px
 from st_aggrid import AgGrid
 
+
 # Set Wide Mode
 st.set_page_config(page_title="Gruppe 5 Datenvisualisierung", layout="wide")
 
+#  "logo"
+
+# Inject CSS to hide sidebar navigation
+st.markdown(
+    """
+    <style>
+        [data-testid="stSidebarNav"] {
+            display: none;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.sidebar.image("assets/logo_asmodeus.jpg", use_container_width=True)
+
+# Custom page navigation
+page = st.sidebar.radio("Go to:", ["Home", "Analytics", "Settings"])
+
+# Display content based on selection
+if page == "Home":
+    st.title("🏠 Welcome to Home Page!")
+elif page == "Analytics":
+    st.title("📊 Analytics Dashboard")
+elif page == "Settings":
+    st.title("⚙️ Settings")
 # Load Data
 @st.cache_data
 def load_data():

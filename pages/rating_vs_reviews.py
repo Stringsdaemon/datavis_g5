@@ -3,26 +3,24 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
-#  Streamlit config
+# Streamlit config
 st.set_page_config(layout="wide", page_title="Preis vs. Bewertung Paradoxon")
 
-
-#  Load, cache, data prep
+# Load, cache, data prep
 @st.cache_data
 def load_data():
     """Load data, delete NaN´s, convert datetime, price categories."""
-
     df = pd.read_csv("google_clean_v3.csv")
 
-    #  Delete na´s
+    # Delete na´s
     df = df.dropna(subset=['Rating', 'Type', 'Reviews', 'Price', 'Installs'])
 
-    #  convert to numeric
+    # Convert to numeric
     df['Reviews'] = df['Reviews'].astype(str).str.replace(',', '').astype(int)
     df['Installs'] = df['Installs'].astype(int)
     df['Price'] = df['Price'].astype(float)
 
-    #  price categories function
+    # Price categories function
     def categorize_price(price):
         """Categorize prices in 5 groups."""
         if price == 0:
@@ -40,63 +38,61 @@ def load_data():
 
     return df
 
-
-#  load data for plot
+# Load data for plot
 plot_data = load_data()
 
-#  title
+# Title
 st.title("Preis vs. Bewertung Paradoxon")
 st.write(
     "Untersuchen Sie, wie Bewertungen, Rezensionen und Installationen zwischen kostenlosen und kostenpflichtigen Apps variieren.")
 
-# layout
-col_main, col_pie = st.columns([2, 1])
+# Layout with new column structure
+col_main, col_data = st.columns([1, 1])
+col_bar, col_pie = st.columns([1, 1])
 
-#  sidebar header
+# Sidebar header
 st.sidebar.header("Filter")
 
-#  extreme vals filter
-apply_filters = st.sidebar.checkbox("Extremwerte entfernen (Installationen > 50 Mio., Bewertungen > 10 Mio.)",
-                                    value=False)
+# Extreme vals filter
+apply_filters = st.sidebar.checkbox("Extremwerte entfernen (Installationen > 50 Mio., Bewertungen > 10 Mio.)", value=False)
 if apply_filters:
     plot_data = plot_data[(plot_data["Installs"] <= 50_000_000) & (plot_data["Reviews"] <= 10_000_000)]
 
-#  activate log scaling
+# Activate log scaling
 log_scale = st.sidebar.checkbox("Log-Skalierung für Bewertungen & Installationen verwenden", value=False)
 
-# create log transformed cols
+# Create log transformed cols
 plot_data["Log Reviews"] = np.log10(plot_data["Reviews"] + 1)
 plot_data["Log Installs"] = np.log10(plot_data["Installs"] + 1)
 
-#  axis choice based on log scale selection
+# Axis choice based on log scale selection
 x_axis = "Log Reviews" if log_scale else "Reviews"
 y_axis = "Log Installs" if log_scale else "Installs"
 
-#   dot size metric
+# Dot size metric
 dot_size_metric = st.sidebar.selectbox("Metrik für Punktgröße wählen:", ["Reviews", "Rating", "Price", "Installs"])
 
-#  app category filter
+# App category filter
 category_filter = st.sidebar.selectbox(
     "Kategorie wählen:",
     ["Alle"] + plot_data["Category"].unique().tolist()
 )
 
 # Apply the filter if a category is selected
-
 if category_filter != "Alle":
     plot_data = plot_data[plot_data["Category"] == category_filter]
 
-#  price range filter
+# Price range filter
 price_range = st.sidebar.selectbox(
     "Preiskategorie wählen:",
     ["Alle", "Gratis", "Sehr Günstig (≤2€)", "Günstig (2€ - 10€)", "Mittelpreisig (10€ - 30€)", "Teuer (>30€)"]
 )
 
-#  apply price filter if not ALLE
+# Apply price filter if not ALLE
 if price_range != "Alle":
     plot_data = plot_data[plot_data["Price Category"] == price_range]
 
-#  Scatter-Plot: Bewertungen vs. Installationen
+# Scatter-Plot: Bewertungen vs. Installationen
 with col_main:
     st.subheader("Scatter-Plot: Rezensionen vs. Bewertungen")
 
@@ -122,16 +118,32 @@ with col_main:
 
     st.plotly_chart(fig_scatter, use_container_width=True)
 
-    # show filtered data
+# DataFrame: Show filtered data
+with col_data:
+    st.subheader("Daten anzeigen")
+    st.dataframe(plot_data[["App", "Category", "Rating", "Reviews", "Installs", "Price", "Type"]].head(10))
 
-    st.dataframe(plot_data[["App", "Category", "Rating", "Reviews", "Installs", "Price", "Type"]].head())
+# Bar Chart: Number of Apps per Price Category
+with col_bar:
+    st.subheader("Bar Chart: Anzahl der Apps nach Preis-Kategorie")
 
-#   pir chart
+    price_counts = plot_data["Price Category"].value_counts().reset_index()
+    price_counts.columns = ["Preiskategorie", "Anzahl"]
+
+    fig_bar = px.bar(price_counts, x="Preiskategorie", y="Anzahl", title="Anzahl der Apps nach Preis-Kategorie",
+                     color="Preiskategorie", color_discrete_sequence=px.colors.sequential.Plasma)
+
+    fig_bar.update_layout(
+        yaxis_title="App Count"
+    )
+
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+# Pie Chart: Rating Distribution
 with col_pie:
     st.subheader("Bewertungsverteilung")
 
-
-    #  rating categories
+    # Rating categories
     def categorize_rating(rating):
         """Categorize rating in 5 groups"""
         if rating < 2:
@@ -145,14 +157,13 @@ with col_pie:
         else:
             return "Sehr Hoch (4.5 - 5.0)"
 
-
     plot_data["Rating Group"] = plot_data["Rating"].apply(categorize_rating)
 
-    # rating count by group
+    # Rating count by group
     rating_counts = plot_data["Rating Group"].value_counts().reset_index()
     rating_counts.columns = ["Bewertungsgruppe", "Anzahl"]
 
-    #  pei chart for ratings
+    # Pie chart for ratings
     fig_pie = px.pie(
         rating_counts,
         names="Bewertungsgruppe",
@@ -178,7 +189,7 @@ fig_3d = px.scatter_3d(
     color_discrete_map={"Free": "#5ec962", "Paid": "#440154"}
 )
 
-#  biggah!
-fig_3d.update_layout(height=800)
+# Bigger!
+fig_3d.update_layout(height=1200)
 
 st.plotly_chart(fig_3d, use_container_width=True)
